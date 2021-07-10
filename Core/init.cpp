@@ -6,17 +6,23 @@
 
 #include <AK/Types.h>
 #include <AK/Array.h>
+#include <Core/Memory/kmalloc.h>
 
 extern u32 __stack_chk_guard;
 u32 __stack_chk_guard;
 
+extern "C" void* multiboot_info_ptr;
+
 void main() 
 {
-    __stack_chk_guard = 0xBADBADBA;
-    Array<u8, 40> new_array;
-    u8* vga_low_accesor = (u8*)0xb8000;
-    for (size_t index = 0; index < 80 * 25 * 2; index++) {
-        vga_low_accesor[index] = 0;
-    }
-    new_array[0] = 1;
+    kmalloc_init();
 }
+
+extern "C" {
+void* multiboot_info_ptr;
+}
+
+// Define some Itanium C++ ABI methods to stop the linker from complaining.
+// If we actually call these something has gone horribly wrong
+void* __dso_handle __attribute__((visibility("hidden")));
+

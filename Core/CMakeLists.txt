@@ -2,6 +2,7 @@ add_compile_options(-Og)
 
 set(CORE_SOURCES
     StdLib.cpp
+    Memory/kmalloc.cpp
     init.cpp
     boot.S
 )
