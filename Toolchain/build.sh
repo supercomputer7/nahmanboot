@@ -35,7 +35,7 @@ mkdir -p "$BUILD_DIR/${BINUTILS_NAME}"
 mkdir -p "$BUILD_DIR/${GCC_NAME}"
 tar xvf "$GCC_PKG"
     pushd "$BUILD_DIR/${GCC_NAME}" 
-    "$DIR/tarballs/${GCC_NAME}/configure" --target=$TARGET --prefix="$LOCAL_DIR" --disable-nls --enable-languages=c --without-headers
+    "$DIR/tarballs/${GCC_NAME}/configure" --target=$TARGET --prefix="$LOCAL_DIR" --disable-nls --enable-languages=c,c++ --without-headers
     make all-gcc
     make all-target-libgcc
     make install-gcc
