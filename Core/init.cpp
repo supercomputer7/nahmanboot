@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2021, Liav A. <liavalb@hotmail.co.il>
+ *
+ * SPDX-License-Identifier: BSD-2-Clause
+ */
+
 #include <AK/Types.h>
 #include <AK/Array.h>
 
