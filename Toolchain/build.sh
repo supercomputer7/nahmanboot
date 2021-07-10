@@ -20,6 +20,11 @@ LOCAL_DIR="$DIR/local/"
 BUILD_DIR="$DIR/build/"
 TARGET=i686-elf
 
+NPROC="nproc"
+if [ -z "$MAKEJOBS" ]; then
+    MAKEJOBS=$($NPROC --ignore=1)
+fi
+
 pushd "$DIR/tarballs"
 curl -LO "$BINUTILS_BASE_URL/$BINUTILS_PKG"
 curl -LO "$GCC_BASE_URL/$GCC_NAME/$GCC_PKG"
@@ -28,7 +33,7 @@ tar xvf "$BINUTILS_PKG"
 mkdir -p "$BUILD_DIR/${BINUTILS_NAME}"
     pushd "$BUILD_DIR/${BINUTILS_NAME}" 
     "$DIR/tarballs/${BINUTILS_NAME}/configure" --target=$TARGET --prefix="$LOCAL_DIR" --with-sysroot --disable-nls --disable-werror
-    make
+    make -j "$MAKEJOBS"
     make install
     popd
 
@@ -36,9 +41,9 @@ mkdir -p "$BUILD_DIR/${GCC_NAME}"
 tar xvf "$GCC_PKG"
     pushd "$BUILD_DIR/${GCC_NAME}" 
     "$DIR/tarballs/${GCC_NAME}/configure" --target=$TARGET --prefix="$LOCAL_DIR" --disable-nls --enable-languages=c,c++ --without-headers
-    make all-gcc
-    make all-target-libgcc
-    make install-gcc
-    make install-target-libgcc
+    make -j "$MAKEJOBS" all-gcc
+    make -j "$MAKEJOBS" all-target-libgcc
+    make -j "$MAKEJOBS" install-gcc
+    make -j "$MAKEJOBS" install-target-libgcc
     popd
 popd
