@@ -6,6 +6,7 @@
 
 #include <AK/StdLibExtras.h>
 #include <AK/Types.h>
+#include <Core/Memory/kmalloc.h>
 #include <Core/StdLib.h>
 
 static u8* s_next_eternal_ptr;
@@ -53,4 +54,53 @@ void kfree(void*)
 {
     // Note: We don't really want to mess with freeing resources, because this is a bootloader.
     // Just Don't do anything.
+}
+
+void* operator new(size_t size)
+{
+    void* ptr = kmalloc(size);
+    VERIFY(ptr);
+    return ptr;
+}
+
+void* operator new(size_t size, const std::nothrow_t&) noexcept
+{
+    return kmalloc(size);
+}
+
+void* operator new[](size_t size)
+{
+    void* ptr = kmalloc(size);
+    VERIFY(ptr);
+    return ptr;
+}
+
+void* operator new[](size_t size, const std::nothrow_t&) noexcept
+{
+    return kmalloc(size);
+}
+
+void operator delete(void* ptr) noexcept
+{
+    return kfree(ptr);
+}
+
+void operator delete(void* ptr, size_t) noexcept
+{
+    return kfree(ptr);
+}
+
+void operator delete[](void* ptr) noexcept
+{
+    return kfree(ptr);
+}
+
+void operator delete[](void* ptr, size_t) noexcept
+{
+    return kfree(ptr);
+}
+
+size_t kmalloc_good_size(size_t size)
+{
+    return size;
 }

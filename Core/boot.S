@@ -29,7 +29,10 @@ stack_top:
 .type _start, @function
 _start:
 	mov $stack_top, %esp
- 
+	
+	/* Move the value from EBX to the pointer so we can use it later */
+    movl %ebx, multiboot_info_ptr
+	/* jump into C++ land */
 	call main
  
 	cli

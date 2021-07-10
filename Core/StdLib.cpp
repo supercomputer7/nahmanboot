@@ -147,17 +147,6 @@ char* strstr(const char* haystack, const char* needle)
     return const_cast<char*>(haystack);
 }
 
-void* memchr(const void* ptr, int c, size_t size)
-{
-    char ch = c;
-    auto* cptr = (const char*)ptr;
-    for (size_t i = 0; i < size; ++i) {
-        if (cptr[i] == ch)
-            return const_cast<char*>(cptr + i);
-    }
-    return nullptr;
-}
-
 // Functions that are automatically called by the C++ compiler.
 // Declare them first, to tell the silly compiler that they are indeed being used.
 

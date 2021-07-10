@@ -6,6 +6,7 @@
 
 #include <AK/Types.h>
 
+extern "C" {
 void* memcpy(void*, const void*, size_t);
 [[nodiscard]] int strncmp(const char* s1, const char* s2, size_t n);
 [[nodiscard]] char* strstr(const char* haystack, const char* needle);
@@ -16,3 +17,4 @@ void* memset(void*, int, size_t);
 [[nodiscard]] int memcmp(const void*, const void*, size_t);
 void* memmove(void* dest, const void* src, size_t n);
 const void* memmem(const void* haystack, size_t, const void* needle, size_t);
+}

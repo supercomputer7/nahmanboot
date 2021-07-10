@@ -10,13 +10,10 @@
 #include <AK/StdLibExtras.h>
 #include <AK/Types.h>
 #include <stdarg.h>
-
-#ifdef __serenity__
-extern "C" size_t strlen(const char*);
-#else
-#    include <string.h>
+#ifdef CORE
+#    include <Core/StdLib.h>
+#    include <Core/kstdio.h>
 #endif
-
 namespace PrintfImplementation {
 
 template<typename PutChFunc, typename T>

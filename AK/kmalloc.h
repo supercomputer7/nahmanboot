@@ -11,6 +11,7 @@
 
 // FIXME: Add include to the Core heap implmentation!
 #if defined(CORE)
+#    include <Core/Memory/kmalloc.h>
 #else
 #    define kcalloc calloc
 #    define kmalloc malloc
@@ -29,5 +30,3 @@
 #else
 #    define AK_MAKE_ETERNAL
 #endif
-
-using std::nothrow;

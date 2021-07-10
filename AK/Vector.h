@@ -18,8 +18,6 @@
 #include <AK/TypedTransfer.h>
 #include <AK/kmalloc.h>
 
-#include <initializer_list>
-
 namespace AK {
 
 namespace Detail {
@@ -55,15 +53,6 @@ public:
         : m_capacity(inline_capacity)
     {
     }
-
-#ifndef SERENITY_LIBC_BUILD
-    Vector(std::initializer_list<T> list) requires(!IsLvalueReference<T>)
-    {
-        ensure_capacity(list.size());
-        for (auto& item : list)
-            unchecked_append(item);
-    }
-#endif
 
     Vector(Vector&& other)
         : m_size(other.m_size)
