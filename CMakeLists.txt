@@ -8,7 +8,5 @@ set(TOOLCHAIN_PREFIX ${TOOLCHAIN_PATH}/${CPU_ARCH}-)
 
 add_compile_options(-Wno-literal-suffix)
 
-#add_link_options(--sysroot ${CMAKE_BINARY_DIR}/Root)
-
 add_subdirectory(AK)
 add_subdirectory(Core)
