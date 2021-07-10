@@ -33,7 +33,7 @@ _start:
 	/* Move the value from EBX to the pointer so we can use it later */
     movl %ebx, multiboot_info_ptr
 	/* jump into C++ land */
-	call main
+	call core_init
  
 	cli
 1:	hlt

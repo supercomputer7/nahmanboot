@@ -6,6 +6,7 @@ set(CORE_TARGET image)
 set(CORE_SOURCES
     StdLib.cpp
     Assertions.cpp
+    Bus/PCI/Management.cpp
     Memory/kmalloc.cpp
     kprintf.cpp
     init.cpp
