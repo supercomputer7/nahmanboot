@@ -139,11 +139,6 @@ constexpr bool is_constant_evaluated()
 __DEFINE_GENERIC_ABS(int, 0, abs);
 __DEFINE_GENERIC_ABS(long, 0l, labs);
 __DEFINE_GENERIC_ABS(long long, 0ll, llabs);
-#ifndef KERNEL
-__DEFINE_GENERIC_ABS(float, 0.0f, fabsf);
-__DEFINE_GENERIC_ABS(double, 0.0, fabs);
-__DEFINE_GENERIC_ABS(long double, 0.0l, fabsl);
-#endif
 
 }
 

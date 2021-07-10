@@ -9,14 +9,6 @@
 #include <AK/Assertions.h>
 #include <AK/Atomic.h>
 #include <AK/Noncopyable.h>
-#ifdef KERNEL
-#    include <Kernel/Arch/x86/Processor.h>
-#    include <Kernel/Arch/x86/ScopedCritical.h>
-#endif
-
-#ifndef __serenity__
-#    include <new>
-#endif
 
 namespace AK {
 
@@ -42,9 +34,6 @@ public:
         T* obj = obj_var.load(AK::memory_order_acquire);
         if (FlatPtr(obj) <= 0x1) {
             // If this is the first time, see if we get to initialize it
-#ifdef KERNEL
-            Kernel::ScopedCritical critical;
-#endif
             if constexpr (allow_create) {
                 if (obj == nullptr && obj_var.compare_exchange_strong(obj, (T*)0x1, AK::memory_order_acq_rel)) {
                     // We're the first one
@@ -55,11 +44,7 @@ public:
             }
             // Someone else was faster, wait until they're done
             while (obj == (T*)0x1) {
-#ifdef KERNEL
-                Kernel::Processor::wait_check();
-#else
                 // TODO: yield
-#endif
                 obj = obj_var.load(AK::memory_order_acquire);
             }
             if constexpr (allow_create) {

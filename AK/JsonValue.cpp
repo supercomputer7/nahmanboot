@@ -8,10 +8,6 @@
 #include <AK/JsonObject.h>
 #include <AK/JsonValue.h>
 
-#ifndef KERNEL
-#    include <AK/JsonParser.h>
-#endif
-
 namespace AK {
 
 JsonValue::JsonValue(Type type)
@@ -81,15 +77,9 @@ bool JsonValue::equals(const JsonValue& other) const
     if (is_string() && other.is_string() && as_string() == other.as_string())
         return true;
 
-#if !defined(KERNEL)
-    if (is_number() && other.is_number() && to_number<double>() == other.to_number<double>()) {
-        return true;
-    }
-#else
     if (is_number() && other.is_number() && to_number<i64>() == other.to_number<i64>()) {
         return true;
     }
-#endif
 
     if (is_array() && other.is_array() && as_array().size() == other.as_array().size()) {
         bool result = true;
@@ -159,14 +149,6 @@ JsonValue::JsonValue(const char* cstring)
 {
 }
 
-#if !defined(KERNEL)
-JsonValue::JsonValue(double value)
-    : m_type(Type::Double)
-{
-    m_value.as_double = value;
-}
-#endif
-
 JsonValue::JsonValue(bool value)
     : m_type(Type::Bool)
 {
@@ -226,12 +208,5 @@ void JsonValue::clear()
     m_type = Type::Null;
     m_value.as_string = nullptr;
 }
-
-#ifndef KERNEL
-Optional<JsonValue> JsonValue::from_string(const StringView& input)
-{
-    return JsonParser(input).parse();
-}
-#endif
 
 }

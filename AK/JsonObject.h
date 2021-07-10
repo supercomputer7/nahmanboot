@@ -122,13 +122,6 @@ public:
         auto* value = get_ptr(key);
         return value && value->is_object();
     }
-#ifndef KERNEL
-    [[nodiscard]] [[nodiscard]] bool has_double(String const& key) const
-    {
-        auto* value = get_ptr(key);
-        return value && value->is_double();
-    }
-#endif
 
     void set(String const& key, JsonValue value)
     {
@@ -194,11 +187,6 @@ inline void JsonValue::serialize(Builder& builder) const
     case Type::Bool:
         builder.append(m_value.as_bool ? "true" : "false");
         break;
-#if !defined(KERNEL)
-    case Type::Double:
-        builder.appendff("{}", m_value.as_double);
-        break;
-#endif
     case Type::Int32:
         builder.appendff("{}", as_i32());
         break;

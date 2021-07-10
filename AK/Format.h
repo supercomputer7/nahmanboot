@@ -15,10 +15,6 @@
 #include <AK/Optional.h>
 #include <AK/StringView.h>
 
-#ifndef KERNEL
-#    include <stdio.h>
-#endif
-
 namespace AK {
 
 class TypeErasedFormatParams;
@@ -183,29 +179,6 @@ public:
         size_t min_width = 0,
         char fill = ' ',
         SignMode sign_mode = SignMode::OnlyIfNeeded);
-
-#ifndef KERNEL
-    void put_f80(
-        long double value,
-        u8 base = 10,
-        bool upper_case = false,
-        Align align = Align::Right,
-        size_t min_width = 0,
-        size_t precision = 6,
-        char fill = ' ',
-        SignMode sign_mode = SignMode::OnlyIfNeeded);
-
-    void put_f64(
-        double value,
-        u8 base = 10,
-        bool upper_case = false,
-        bool zero_pad = false,
-        Align align = Align::Right,
-        size_t min_width = 0,
-        size_t precision = 6,
-        char fill = ' ',
-        SignMode sign_mode = SignMode::OnlyIfNeeded);
-#endif
 
     void put_hexdump(
         ReadonlyBytes,
@@ -392,34 +365,6 @@ struct Formatter<bool> : StandardFormatter {
     void format(FormatBuilder&, bool value);
 };
 
-#ifndef KERNEL
-template<>
-struct Formatter<float> : StandardFormatter {
-    void format(FormatBuilder&, float value);
-};
-template<>
-struct Formatter<double> : StandardFormatter {
-    Formatter() = default;
-    explicit Formatter(StandardFormatter formatter)
-        : StandardFormatter(formatter)
-    {
-    }
-
-    void format(FormatBuilder&, double value);
-};
-
-template<>
-struct Formatter<long double> : StandardFormatter {
-    Formatter() = default;
-    explicit Formatter(StandardFormatter formatter)
-        : StandardFormatter(formatter)
-    {
-    }
-
-    void format(FormatBuilder&, long double value);
-};
-#endif
-
 template<>
 struct Formatter<std::nullptr_t> : Formatter<FlatPtr> {
     void format(FormatBuilder& builder, std::nullptr_t)
@@ -433,50 +378,6 @@ struct Formatter<std::nullptr_t> : Formatter<FlatPtr> {
 
 void vformat(StringBuilder&, StringView fmtstr, TypeErasedFormatParams);
 
-#ifndef KERNEL
-void vout(FILE*, StringView fmtstr, TypeErasedFormatParams, bool newline = false);
-
-template<typename... Parameters>
-void out(FILE* file, CheckedFormatString<Parameters...>&& fmtstr, const Parameters&... parameters) { vout(file, fmtstr.view(), VariadicFormatParams { parameters... }); }
-
-template<typename... Parameters>
-void outln(FILE* file, CheckedFormatString<Parameters...>&& fmtstr, const Parameters&... parameters) { vout(file, fmtstr.view(), VariadicFormatParams { parameters... }, true); }
-
-inline void outln(FILE* file) { fputc('\n', file); }
-
-template<typename... Parameters>
-void out(CheckedFormatString<Parameters...>&& fmtstr, const Parameters&... parameters) { out(stdout, move(fmtstr), parameters...); }
-
-template<typename... Parameters>
-void outln(CheckedFormatString<Parameters...>&& fmtstr, const Parameters&... parameters) { outln(stdout, move(fmtstr), parameters...); }
-
-inline void outln() { outln(stdout); }
-
-#    define outln_if(flag, fmt, ...)       \
-        do {                               \
-            if constexpr (flag)            \
-                outln(fmt, ##__VA_ARGS__); \
-        } while (0)
-
-template<typename... Parameters>
-void warn(CheckedFormatString<Parameters...>&& fmtstr, const Parameters&... parameters)
-{
-    out(stderr, move(fmtstr), parameters...);
-}
-
-template<typename... Parameters>
-void warnln(CheckedFormatString<Parameters...>&& fmtstr, const Parameters&... parameters) { outln(stderr, move(fmtstr), parameters...); }
-
-inline void warnln() { outln(stderr); }
-
-#    define warnln_if(flag, fmt, ...)      \
-        do {                               \
-            if constexpr (flag)            \
-                outln(fmt, ##__VA_ARGS__); \
-        } while (0)
-
-#endif
-
 void vdbgln(StringView fmtstr, TypeErasedFormatParams);
 
 template<typename... Parameters>
@@ -489,7 +390,7 @@ inline void dbgln() { dbgln(""); }
 
 void set_debug_enabled(bool);
 
-#ifdef KERNEL
+#ifdef CORE
 void vdmesgln(StringView fmtstr, TypeErasedFormatParams);
 
 template<typename... Parameters>
@@ -562,15 +463,9 @@ struct Formatter<FormatString> : Formatter<String> {
 
 } // namespace AK
 
-#ifdef KERNEL
+#ifdef CORE
 using AK::critical_dmesgln;
 using AK::dmesgln;
-#else
-using AK::out;
-using AK::outln;
-
-using AK::warn;
-using AK::warnln;
 #endif
 
 using AK::dbgln;

@@ -236,49 +236,19 @@ Optional<JsonValue> JsonParser::parse_number()
     StringView number_string(number_buffer.data(), number_buffer.size());
     StringView fraction_string(fraction_buffer.data(), fraction_buffer.size());
 
-#ifndef KERNEL
-    if (is_double) {
-        // FIXME: This logic looks shaky.
-        int whole = 0;
-        auto to_signed_result = number_string.to_uint();
-        if (to_signed_result.has_value()) {
-            whole = to_signed_result.value();
-        } else {
-            auto number = number_string.to_int();
-            if (!number.has_value())
-                return {};
-            whole = number.value();
-        }
-
-        auto fraction_string_uint = fraction_string.to_uint();
-        if (!fraction_string_uint.has_value())
-            return {};
-        int fraction = fraction_string_uint.value();
-        fraction *= (whole < 0) ? -1 : 1;
-
-        auto divider = 1;
-        for (size_t i = 0; i < fraction_buffer.size(); ++i) {
-            divider *= 10;
-        }
-        value = JsonValue((double)whole + ((double)fraction / divider));
+    auto to_unsigned_result = number_string.to_uint();
+    if (to_unsigned_result.has_value()) {
+        value = JsonValue(to_unsigned_result.value());
     } else {
-#endif
-        auto to_unsigned_result = number_string.to_uint();
-        if (to_unsigned_result.has_value()) {
-            value = JsonValue(to_unsigned_result.value());
+        auto number = number_string.to_int<i64>();
+        if (!number.has_value())
+            return {};
+        if (number.value() <= NumericLimits<i32>::max()) {
+            value = JsonValue((i32)number.value());
         } else {
-            auto number = number_string.to_int<i64>();
-            if (!number.has_value())
-                return {};
-            if (number.value() <= NumericLimits<i32>::max()) {
-                value = JsonValue((i32)number.value());
-            } else {
-                value = JsonValue(number.value());
-            }
+            value = JsonValue(number.value());
         }
-#ifndef KERNEL
     }
-#endif
 
     return value;
 }

@@ -8,11 +8,8 @@
 
 #include <AK/Types.h>
 
-#if defined(KERNEL)
-#    include <Kernel/StdLib.h>
-#else
-#    include <stdlib.h>
-#    include <string.h>
+#if defined(CORE)
+#    include <Core/StdLib.h>
 #endif
 
 ALWAYS_INLINE void fast_u32_copy(u32* dest, const u32* src, size_t count)

@@ -317,106 +317,6 @@ void FormatBuilder::put_i64(
     put_u64(static_cast<u64>(value), base, prefix, upper_case, zero_pad, align, min_width, fill, sign_mode, is_negative);
 }
 
-#ifndef KERNEL
-void FormatBuilder::put_f64(
-    double value,
-    u8 base,
-    bool upper_case,
-    bool zero_pad,
-    Align align,
-    size_t min_width,
-    size_t precision,
-    char fill,
-    SignMode sign_mode)
-{
-    StringBuilder string_builder;
-    FormatBuilder format_builder { string_builder };
-
-    bool is_negative = value < 0.0;
-    if (is_negative)
-        value = -value;
-
-    format_builder.put_u64(static_cast<u64>(value), base, false, upper_case, false, Align::Right, 0, ' ', sign_mode, is_negative);
-
-    if (precision > 0) {
-        // FIXME: This is a terrible approximation but doing it properly would be a lot of work. If someone is up for that, a good
-        // place to start would be the following video from CppCon 2019:
-        // https://youtu.be/4P_kbF0EbZM (Stephan T. Lavavej “Floating-Point <charconv>: Making Your Code 10x Faster With C++17's Final Boss”)
-        value -= static_cast<i64>(value);
-
-        double epsilon = 0.5;
-        for (size_t i = 0; i < precision; ++i)
-            epsilon /= 10.0;
-
-        size_t visible_precision = 0;
-        for (; visible_precision < precision; ++visible_precision) {
-            if (value - static_cast<i64>(value) < epsilon)
-                break;
-            value *= 10.0;
-            epsilon *= 10.0;
-        }
-
-        if (zero_pad || visible_precision > 0)
-            string_builder.append('.');
-
-        if (visible_precision > 0)
-            format_builder.put_u64(static_cast<u64>(value), base, false, upper_case, true, Align::Right, visible_precision);
-
-        if (zero_pad && (precision - visible_precision) > 0)
-            format_builder.put_u64(0, base, false, false, true, Align::Right, precision - visible_precision);
-    }
-
-    put_string(string_builder.string_view(), align, min_width, NumericLimits<size_t>::max(), fill);
-}
-
-void FormatBuilder::put_f80(
-    long double value,
-    u8 base,
-    bool upper_case,
-    Align align,
-    size_t min_width,
-    size_t precision,
-    char fill,
-    SignMode sign_mode)
-{
-    StringBuilder string_builder;
-    FormatBuilder format_builder { string_builder };
-
-    bool is_negative = value < 0.0l;
-    if (is_negative)
-        value = -value;
-
-    format_builder.put_u64(static_cast<u64>(value), base, false, upper_case, false, Align::Right, 0, ' ', sign_mode, is_negative);
-
-    if (precision > 0) {
-        // FIXME: This is a terrible approximation but doing it properly would be a lot of work. If someone is up for that, a good
-        // place to start would be the following video from CppCon 2019:
-        // https://youtu.be/4P_kbF0EbZM (Stephan T. Lavavej “Floating-Point <charconv>: Making Your Code 10x Faster With C++17's Final Boss”)
-        value -= static_cast<i64>(value);
-
-        long double epsilon = 0.5l;
-        for (size_t i = 0; i < precision; ++i)
-            epsilon /= 10.0l;
-
-        size_t visible_precision = 0;
-        for (; visible_precision < precision; ++visible_precision) {
-            if (value - static_cast<i64>(value) < epsilon)
-                break;
-            value *= 10.0l;
-            epsilon *= 10.0l;
-        }
-
-        if (visible_precision > 0) {
-            string_builder.append('.');
-            format_builder.put_u64(static_cast<u64>(value), base, false, upper_case, true, Align::Right, visible_precision);
-        }
-    }
-
-    put_string(string_builder.string_view(), align, min_width, NumericLimits<size_t>::max(), fill);
-}
-
-#endif
-
 void FormatBuilder::put_hexdump(ReadonlyBytes bytes, size_t width, char fill)
 {
     auto put_char_view = [&](auto i) {
@@ -642,76 +542,6 @@ void Formatter<bool>::format(FormatBuilder& builder, bool value)
         return formatter.format(builder, value ? "true" : "false");
     }
 }
-#ifndef KERNEL
-void Formatter<long double>::format(FormatBuilder& builder, long double value)
-{
-    u8 base;
-    bool upper_case;
-    if (m_mode == Mode::Default || m_mode == Mode::Float) {
-        base = 10;
-        upper_case = false;
-    } else if (m_mode == Mode::Hexfloat) {
-        base = 16;
-        upper_case = false;
-    } else if (m_mode == Mode::HexfloatUppercase) {
-        base = 16;
-        upper_case = true;
-    } else {
-        VERIFY_NOT_REACHED();
-    }
-
-    m_width = m_width.value_or(0);
-    m_precision = m_precision.value_or(6);
-
-    builder.put_f80(value, base, upper_case, m_align, m_width.value(), m_precision.value(), m_fill, m_sign_mode);
-}
-
-void Formatter<double>::format(FormatBuilder& builder, double value)
-{
-    u8 base;
-    bool upper_case;
-    if (m_mode == Mode::Default || m_mode == Mode::Float) {
-        base = 10;
-        upper_case = false;
-    } else if (m_mode == Mode::Hexfloat) {
-        base = 16;
-        upper_case = false;
-    } else if (m_mode == Mode::HexfloatUppercase) {
-        base = 16;
-        upper_case = true;
-    } else {
-        VERIFY_NOT_REACHED();
-    }
-
-    m_width = m_width.value_or(0);
-    m_precision = m_precision.value_or(6);
-
-    builder.put_f64(value, base, upper_case, m_zero_pad, m_align, m_width.value(), m_precision.value(), m_fill, m_sign_mode);
-}
-void Formatter<float>::format(FormatBuilder& builder, float value)
-{
-    Formatter<double> formatter { *this };
-    formatter.format(builder, value);
-}
-#endif
-
-#ifndef KERNEL
-void vout(FILE* file, StringView fmtstr, TypeErasedFormatParams params, bool newline)
-{
-    StringBuilder builder;
-    vformat(builder, fmtstr, params);
-
-    if (newline)
-        builder.append('\n');
-
-    const auto string = builder.string_view();
-    const auto retval = ::fwrite(string.characters_without_null_termination(), 1, string.length(), file);
-    if (static_cast<size_t>(retval) != string.length()) {
-        auto error = ferror(file);
-        dbgln("vout() failed ({} written out of {}), error was {} ({})", retval, string.length(), error, strerror(error));
-    }
-}
-#endif
 
 static bool is_debug_enabled = true;
 
@@ -727,29 +557,6 @@ void vdbgln(StringView fmtstr, TypeErasedFormatParams params)
 
     StringBuilder builder;
 
-#ifdef __serenity__
-#    ifdef KERNEL
-    if (Kernel::Processor::is_initialized() && Kernel::Thread::current()) {
-        auto& thread = *Kernel::Thread::current();
-        builder.appendff("\033[34;1m[#{} {}({}:{})]\033[0m: ", Kernel::Processor::id(), thread.process().name(), thread.pid().value(), thread.tid().value());
-    } else {
-        builder.appendff("\033[34;1m[#{} Kernel]\033[0m: ", Kernel::Processor::id());
-    }
-#    else
-    static TriState got_process_name = TriState::Unknown;
-    static char process_name_buffer[256];
-
-    if (got_process_name == TriState::Unknown) {
-        if (get_process_name(process_name_buffer, sizeof(process_name_buffer)) == 0)
-            got_process_name = TriState::True;
-        else
-            got_process_name = TriState::False;
-    }
-    if (got_process_name == TriState::True)
-        builder.appendff("\033[33;1m{}({}:{})\033[0m: ", process_name_buffer, getpid(), gettid());
-#    endif
-#endif
-
     vformat(builder, fmtstr, params);
     builder.append('\n');
 
@@ -758,19 +565,10 @@ void vdbgln(StringView fmtstr, TypeErasedFormatParams params)
     dbgputstr(string.characters_without_null_termination(), string.length());
 }
 
-#ifdef KERNEL
+#ifdef CORE
 void vdmesgln(StringView fmtstr, TypeErasedFormatParams params)
 {
     StringBuilder builder;
-
-#    ifdef __serenity__
-    if (Kernel::Processor::is_initialized() && Kernel::Thread::current()) {
-        auto& thread = *Kernel::Thread::current();
-        builder.appendff("\033[34;1m[{}({}:{})]\033[0m: ", thread.process().name(), thread.pid().value(), thread.tid().value());
-    } else {
-        builder.appendff("\033[34;1m[Kernel]\033[0m: ");
-    }
-#    endif
 
     vformat(builder, fmtstr, params);
     builder.append('\n');
@@ -785,14 +583,6 @@ void v_critical_dmesgln(StringView fmtstr, TypeErasedFormatParams params)
     // at OOM conditions.
 
     StringBuilder builder;
-#    ifdef __serenity__
-    if (Kernel::Processor::is_initialized() && Kernel::Thread::current()) {
-        auto& thread = *Kernel::Thread::current();
-        builder.appendff("[{}({}:{})]: ", thread.process().name(), thread.pid().value(), thread.tid().value());
-    } else {
-        builder.appendff("[Kernel]: ");
-    }
-#    endif
 
     vformat(builder, fmtstr, params);
     builder.append('\n');
@@ -800,7 +590,6 @@ void v_critical_dmesgln(StringView fmtstr, TypeErasedFormatParams params)
     const auto string = builder.string_view();
     kernelcriticalputstr(string.characters_without_null_termination(), string.length());
 }
-
 #endif
 
 template struct Formatter<unsigned char, void>;

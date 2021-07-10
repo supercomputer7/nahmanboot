@@ -8,10 +8,6 @@
 
 #include <AK/JsonArraySerializer.h>
 
-#ifndef KERNEL
-#    include <AK/JsonValue.h>
-#endif
-
 namespace AK {
 
 template<typename Builder>
@@ -31,14 +27,6 @@ public:
         if (!m_finished)
             finish();
     }
-
-#ifndef KERNEL
-    void add(const StringView& key, const JsonValue& value)
-    {
-        begin_item(key);
-        value.serialize(m_builder);
-    }
-#endif
 
     void add(const StringView& key, const StringView& value)
     {
@@ -105,14 +93,6 @@ public:
         begin_item(key);
         m_builder.appendff("{}", value);
     }
-
-#ifndef KERNEL
-    void add(const StringView& key, double value)
-    {
-        begin_item(key);
-        m_builder.appendff("{}", value);
-    }
-#endif
 
     JsonArraySerializer<Builder> add_array(const StringView& key)
     {

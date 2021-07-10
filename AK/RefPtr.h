@@ -13,10 +13,6 @@
 #include <AK/StdLibExtras.h>
 #include <AK/Traits.h>
 #include <AK/Types.h>
-#ifdef KERNEL
-#    include <Kernel/Arch/x86/Processor.h>
-#    include <Kernel/Arch/x86/ScopedCritical.h>
-#endif
 
 namespace AK {
 
@@ -58,9 +54,6 @@ struct RefPtrTraits {
             expected &= ~(FlatPtr)1; // only if lock bit is not set
             if (atomic_var.compare_exchange_strong(expected, new_value, AK::MemoryOrder::memory_order_acq_rel))
                 break;
-#ifdef KERNEL
-            Kernel::Processor::wait_check();
-#endif
         }
         return expected;
     }
@@ -75,9 +68,6 @@ struct RefPtrTraits {
                 break;
             if (!is_null(expected))
                 return false;
-#ifdef KERNEL
-            Kernel::Processor::wait_check();
-#endif
         }
         return true;
     }
@@ -94,9 +84,6 @@ struct RefPtrTraits {
             bits = atomic_var.fetch_or(1, AK::MemoryOrder::memory_order_acq_rel);
             if (!(bits & 1))
                 break;
-#ifdef KERNEL
-            Kernel::Processor::wait_check();
-#endif
         }
         VERIFY(!(bits & 1));
         return bits;
@@ -382,10 +369,6 @@ private:
     template<typename F>
     void do_while_locked(F f) const
     {
-#ifdef KERNEL
-        // We don't want to be pre-empted while we have the lock bit set
-        Kernel::ScopedCritical critical;
-#endif
         FlatPtr bits = PtrTraits::lock(m_bits);
         T* ptr = PtrTraits::as_ptr(bits);
         f(ptr);
@@ -399,10 +382,6 @@ private:
 
     [[nodiscard]] ALWAYS_INLINE FlatPtr add_ref_raw() const
     {
-#ifdef KERNEL
-        // We don't want to be pre-empted while we have the lock bit set
-        Kernel::ScopedCritical critical;
-#endif
         // This prevents a race condition between thread A and B:
         // 1. Thread A copies RefPtr, e.g. through assignment or copy constructor,
         //    gets the pointer from source, but is pre-empted before adding
