@@ -20,7 +20,7 @@ add_compile_definitions(CORE)
 add_link_options(LINKER:-T ${CMAKE_CURRENT_SOURCE_DIR}/linker.ld -nostdlib)
 
 if (NOT EXISTS ${CMAKE_C_COMPILER})
-    message(FATAL_ERROR "Toolchain appears to be missing! Please run: toolchain/build.sh")
+    message(FATAL_ERROR "Toolchain appears to be missing! Please run: Toolchain/build.sh")
 endif()
 
 set(CORE_TARGET image)

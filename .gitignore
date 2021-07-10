@@ -1,4 +1,4 @@
-toolchain/tarballs
-toolchain/build
-toolchain/local
-build/
+Toolchain/tarballs
+Toolchain/build
+Toolchain/local
+Build/
