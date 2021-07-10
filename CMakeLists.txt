@@ -1,0 +1,18 @@
+cmake_minimum_required(VERSION 3.16)
+project(nahmanboot C ASM)
+
+set(TOOLCHAIN_ROOT ${CMAKE_SOURCE_DIR}/toolchain/local/)
+set(TOOLCHAIN_PATH ${TOOLCHAIN_ROOT}/bin)
+set(CPU_ARCH "i686-elf")
+set(TOOLCHAIN_PREFIX ${TOOLCHAIN_PATH}/${CPU_ARCH}-)
+
+set(CMAKE_C_COMPILER ${TOOLCHAIN_PREFIX}gcc)
+set(CMAKE_ASM_COMPILER ${TOOLCHAIN_PREFIX}gcc)
+set(CMAKE_LINKER ${TOOLCHAIN_PREFIX}ld)
+set(CMAKE_RANLIB ${TOOLCHAIN_PREFIX}gcc-ranlib)
+set(CMAKE_STRIP ${TOOLCHAIN_PREFIX}strip)
+set(CMAKE_AR ${TOOLCHAIN_PREFIX}gcc-ar)
+
+set(GCC_VERSION 11.1.0)
+
+add_subdirectory(core)
