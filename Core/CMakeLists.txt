@@ -1,11 +1,20 @@
 add_compile_options(-Og)
 
 set(CORE_SOURCES
+    StdLib.cpp
     init.cpp
     boot.S
 )
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unknown-warning-option -Wvla -Wnull-dereference")
+set(AK_SOURCES
+)
+
+set(SOURCES
+    ${CORE_SOURCES}
+    ${AK_SOURCES}
+)
+
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unknown-warning-option -Wvla -Wnull-dereference -std=c++20")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-rtti -ffreestanding -fbuiltin")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mno-80387 -mno-mmx -mno-sse -mno-sse2")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-asynchronous-unwind-tables")
@@ -15,6 +24,8 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-exceptions")
 
 include_directories(${TOOLCHAIN_ROOT}/lib/gcc/${CPU_ARCH}/${GCC_VERSION}/include/)
 link_directories(${TOOLCHAIN_ROOT}/lib/gcc/${CPU_ARCH}/${GCC_VERSION}/)
+include_directories(${CMAKE_SOURCE_DIR}/)
+link_directories(${CMAKE_SOURCE_DIR}/AK/)
 
 add_compile_definitions(CORE)
 
@@ -25,4 +36,4 @@ if (NOT EXISTS ${CMAKE_C_COMPILER})
 endif()
 
 set(CORE_TARGET image)
-add_executable(${CORE_TARGET} ${CORE_SOURCES})
+add_executable(${CORE_TARGET} ${SOURCES})

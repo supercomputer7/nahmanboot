@@ -13,7 +13,9 @@ set(CMAKE_LINKER ${TOOLCHAIN_PREFIX}ld)
 set(CMAKE_RANLIB ${TOOLCHAIN_PREFIX}gcc-ranlib)
 set(CMAKE_STRIP ${TOOLCHAIN_PREFIX}strip)
 set(CMAKE_AR ${TOOLCHAIN_PREFIX}gcc-ar)
-
 set(GCC_VERSION 11.1.0)
 
+add_link_options(--sysroot ${CMAKE_BINARY_DIR}/Root)
+
+add_subdirectory(AK)
 add_subdirectory(Core)
