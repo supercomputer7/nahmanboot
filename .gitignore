@@ -2,3 +2,14 @@ Toolchain/tarballs
 Toolchain/build
 Toolchain/local
 Build/
+.vscode
+.ccls-cache
+.DS_Store
+compile_commands.json
+.cache
+.clang_complete
+.clangd
+.idea/
+cmake-build-debug/
+sync-local.sh
+.vim/
