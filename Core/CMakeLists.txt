@@ -6,8 +6,11 @@ set(CORE_TARGET image)
 set(CORE_SOURCES
     StdLib.cpp
     Assertions.cpp
+    Images/Multiboot.cpp
     Bus/PCI/Management.cpp
     Memory/kmalloc.cpp
+    Memory/Management.cpp
+    Memory/PhysicalRegion.cpp
     kprintf.cpp
     init.cpp
     boot.S

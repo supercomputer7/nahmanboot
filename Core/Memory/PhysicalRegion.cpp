@@ -1,0 +1,26 @@
+/*
+ * Copyright (c) 2021, Liav A. <liavalb@hotmail.co.il>
+ *
+ * SPDX-License-Identifier: BSD-2-Clause
+ */
+
+#include <Core/Memory/PhysicalRegion.h>
+#include <Core/Memory/kmalloc.h>
+
+namespace Core {
+
+NonnullOwnPtr<PhysicalRegion> PhysicalRegion::create(PhysicalAddress base_address, size_t length, Multiboot::MemoryEntryType entry_type)
+{
+    // Note: For multiboot protocol 1 entries, do a simple conversion.
+    auto e820_entry_type = (PhysicalRegion::Type)entry_type;
+    return make<PhysicalRegion>(*new PhysicalRegion(base_address, length, e820_entry_type));
+}
+
+PhysicalRegion::PhysicalRegion(PhysicalAddress base_address, size_t length, PhysicalRegion::Type entry_type)
+    : m_base_address(base_address)
+    , m_length(length)
+    , m_type(entry_type)
+{
+}
+
+}
