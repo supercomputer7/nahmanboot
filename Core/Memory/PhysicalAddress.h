@@ -30,6 +30,7 @@ public:
     }
 
     [[nodiscard]] PhysicalAddress offset(PhysicalPtr o) const { return PhysicalAddress(m_address + o); }
+    [[nodiscard]] PhysicalAddress deoffset(PhysicalPtr o) const { return PhysicalAddress(m_address - o); }
     [[nodiscard]] PhysicalPtr get() const { return m_address; }
     void set(PhysicalPtr address) { m_address = address; }
     void mask(PhysicalPtr m) { m_address &= m; }

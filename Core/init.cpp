@@ -23,14 +23,19 @@ extern "C" [[noreturn]] void core_init() __attribute__((used));
 
 void core_init()
 {
-    kmalloc_init();
-
-    if (!PCI::Management::the().initialize())
-        VERIFY_NOT_REACHED();
+    kmalloc_eternal_init();
     if (multiboot_info_ptr->mmap_addr == 0) {
         VERIFY_NOT_REACHED();
     }
     MemoryManagement::the().initialize(PhysicalAddress(multiboot_info_ptr->mmap_addr), multiboot_info_ptr->mmap_length / sizeof(Multiboot::MemoryMapEntry));
+    kmalloc_init();
+
+    if (!PCI::Management::the().initialize())
+        VERIFY_NOT_REACHED();
+    kmalloc_stats stats;
+    get_kmalloc_stats(stats);
+    dbgln("kmalloc stats, bytes allocated {}, bytes eternal {}", stats.bytes_allocated, stats.bytes_eternal);
+
     VERIFY_NOT_REACHED();
 }
 

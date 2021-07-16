@@ -17,10 +17,10 @@ NonnullOwnPtr<PhysicalRegion> PhysicalRegion::create(PhysicalAddress base_addres
 }
 
 PhysicalRegion::PhysicalRegion(PhysicalAddress base_address, size_t length, PhysicalRegion::Type entry_type)
-    : m_base_address(base_address)
-    , m_length(length)
+    : m_range({ base_address, length })
     , m_type(entry_type)
 {
+    VERIFY(!m_range.is_null());
 }
 
 }

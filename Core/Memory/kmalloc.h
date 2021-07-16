@@ -18,6 +18,14 @@ struct nothrow_t {
 extern const nothrow_t nothrow;
 };
 
+struct kmalloc_stats {
+    size_t bytes_allocated;
+    size_t bytes_free;
+    size_t bytes_eternal;
+};
+void get_kmalloc_stats(kmalloc_stats&);
+
+void kmalloc_eternal_init();
 void kmalloc_init();
 
 [[gnu::malloc, gnu::returns_nonnull, gnu::alloc_size(1)]] void* kmalloc_eternal(size_t);
@@ -27,6 +35,10 @@ void kfree(void*);
 void* kmalloc(size_t);
 extern "C" {
 size_t kmalloc_good_size(size_t size);
+}
+
+extern "C" {
+void declare_emergency_kmalloc();
 }
 
 inline void* operator new(size_t, void* p) { return p; }

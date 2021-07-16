@@ -13,6 +13,7 @@
 namespace Core::PCI {
 
 class Management {
+    AK_MAKE_ETERNAL
 public:
     static Management& the();
     bool initialize();
