@@ -4,6 +4,8 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
+#pragma once
+
 #include <AK/Types.h>
 #include <AK/Vector.h>
 #include <Core/Bus/PCI/Device.h>

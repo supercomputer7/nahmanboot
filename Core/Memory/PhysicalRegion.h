@@ -4,6 +4,8 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
+#pragma once
+
 #include <AK/NonnullOwnPtr.h>
 #include <AK/Types.h>
 #include <Core/Images/Multiboot.h>

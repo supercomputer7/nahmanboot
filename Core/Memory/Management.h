@@ -4,6 +4,8 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
+#pragma once
+
 #include <AK/NonnullOwnPtrVector.h>
 #include <AK/Types.h>
 #include <Core/Memory/PhysicalAddress.h>
