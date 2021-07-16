@@ -12,6 +12,10 @@
 static u8* s_next_eternal_ptr;
 static u8* s_end_of_eternal_range;
 
+namespace std {
+const nothrow_t nothrow;
+}
+
 // Note: 100 KiB seems like a reasonable amount of memory for a bootloader
 // In any case, we can reduce the amount of eternal "heap" and use the e820 memory map
 // to find new memory ranges to allocate from.

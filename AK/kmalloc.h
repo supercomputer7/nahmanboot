@@ -30,3 +30,5 @@
 #else
 #    define AK_MAKE_ETERNAL
 #endif
+
+using std::nothrow;
