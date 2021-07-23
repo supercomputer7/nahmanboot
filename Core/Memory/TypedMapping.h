@@ -26,6 +26,7 @@ template<typename T>
 static TypedMapping<T> map_typed(PhysicalAddress paddr)
 {
     TypedMapping<T> table;
+    table.m_base_address = paddr;
     table.offset = paddr.offset_in_page();
     return table;
 }
