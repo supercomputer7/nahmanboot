@@ -24,6 +24,12 @@ extern "C" [[noreturn]] void core_init() __attribute__((used));
 void core_init()
 {
     kmalloc_eternal_init();
+    // Note: For now, just assert if the pointer to multiboot provided info is
+    // null, because we can't do anything useful yet without it.
+    // FIXME: Remove this once we have our own bootloader stub at the MBR to
+    // load this code and provide the memory map to to the bootloader.
+    VERIFY(multiboot_info_ptr != nullptr);
+
     if (multiboot_info_ptr->mmap_addr == 0) {
         VERIFY_NOT_REACHED();
     }
