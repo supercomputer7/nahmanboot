@@ -16,13 +16,13 @@ From local repository directory:
 ```sh
 mkdir Build
 cd Build
-cmake ..
-make
+cmake .. -G Ninja
+ninja
 ```
 
 ## Testing!
 
 From local repository directory:
 ```sh
-make run
+ninja run
 ```
