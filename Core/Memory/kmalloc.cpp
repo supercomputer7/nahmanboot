@@ -85,7 +85,7 @@ void* kmalloc_eternal(size_t size)
     void* ptr = s_next_eternal_ptr;
     s_next_eternal_ptr += size;
     s_eternal_allocated_count += size;
-    // FIXME: Add an assertion to ensure we don't allocate too much in the bootloader.
+    VERIFY_OR_PANIC(s_next_eternal_ptr < s_end_of_eternal_range);
     return ptr;
 }
 

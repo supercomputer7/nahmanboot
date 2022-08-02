@@ -7,6 +7,8 @@
 #include <AK/Format.h>
 #include <Core/Assertions.h>
 #include <Core/Memory/kmalloc.h>
+#include <Core/StdLib.h>
+#include <Core/kstdio.h>
 
 void __assertion_failed(const char* msg, const char* file, unsigned line, const char* func)
 {
@@ -18,6 +20,14 @@ void __assertion_failed(const char* msg, const char* file, unsigned line, const 
 
     abort();
 }
+
+void __panic_kmalloc()
+{
+    asm volatile("cli");
+    kernelputstr("PANIC: Out of memory in critical memory allocation section", strlen("PANIC: Out of memory in critical memory allocation section"));
+    abort();
+}
+
 [[noreturn]] void abort()
 {
     asm volatile("cli; hlt");

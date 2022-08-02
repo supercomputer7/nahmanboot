@@ -16,6 +16,13 @@
             __assertion_failed(#expr, __FILE__, __LINE__, __PRETTY_FUNCTION__); \
     } while (0)
 
+[[noreturn]] void __panic_kmalloc();
+#define VERIFY_OR_PANIC(expr)                      \
+    do {                                           \
+        if (!static_cast<bool>(expr)) [[unlikely]] \
+            __panic_kmalloc();                     \
+    } while (0)
+
 #define VERIFY_NOT_REACHED() VERIFY(false)
 
 extern "C" {
